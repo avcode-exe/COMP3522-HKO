@@ -218,3 +218,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project data (too large for GitHub) - store separately
+raw/
+processed/
+logs/
+meta/collection_log.csv
+
+# Project data collection plans
+data-collection-plan.md
