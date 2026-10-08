@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import sys
 import time
 from datetime import datetime, timedelta, timezone
@@ -202,3 +203,21 @@ def load_stations(selected_only=True):
     if selected_only:
         df = df[df["selected"] == True].copy()
     return df
+
+
+def load_env_file(path=None):
+    path = Path(path) if path else PROJECT_ROOT / ".env"
+    if not path.exists():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if not key:
+            continue
+        if key.upper() == "HF_TOKEN":
+            os.environ.setdefault("HF_TOKEN", value)
+        os.environ.setdefault(key, value)

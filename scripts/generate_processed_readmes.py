@@ -382,6 +382,17 @@ def generate_directory_readme(directory, generated_at):
 
 def generate_index(root, section_readmes, generated_at):
     out = []
+    out.append("---")
+    out.append("license: other")
+    out.append("pretty_name: COMP3522-HKO processed weather dataset (2023-2025)")
+    out.append("tags:")
+    out.append("- weather")
+    out.append("- hong-kong")
+    out.append("- hko")
+    out.append("- rainfall")
+    out.append("- meteorology")
+    out.append("---")
+    out.append("")
     out.append("# `processed/` — auto-generated index")
     out.append("")
     out.append("> Auto-generated on {} by `scripts/generate_processed_readmes.py`. Each section below has its own dynamically generated README.".format(generated_at))

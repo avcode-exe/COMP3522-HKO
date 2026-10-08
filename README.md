@@ -129,6 +129,9 @@ These hit the live HKO APIs and return **current** data (not history), so they a
 # Rebuild all processed tables from raw (idempotent; also regenerates the docs below)
 .venv\Scripts\python.exe scripts/flatten_hko_data.py
 
+# Process and publish to Hugging Face in one step (optional; see below)
+.venv\Scripts\python.exe scripts/flatten_hko_data.py --push-hf
+
 # Auto-generate processed/README.md and one README per source folder (dynamic, from the data)
 .venv\Scripts\python.exe scripts/generate_processed_readmes.py
 
@@ -140,6 +143,23 @@ These hit the live HKO APIs and return **current** data (not history), so they a
 ```
 
 The generated `processed/**/README.md` files are dynamic: they discover the files and columns actually present and document each table's format, row/column counts, purpose, sources, time coverage, join keys, and a per-column schema. Flatten calls the generator automatically, so they always match the current data.
+
+## Publish to Hugging Face (optional)
+
+Processed data can be published to a Hugging Face **dataset** repo (default: `NotASI/COMP3522-HKO`, public). Authentication uses the `HF_TOKEN` environment variable or a cached `huggingface-cli login`.
+
+```powershell
+# process, then upload processed/ in one step
+.venv\Scripts\python.exe scripts/flatten_hko_data.py --push-hf
+
+# or upload the current processed/ on its own
+.venv\Scripts\python.exe scripts/upload_to_huggingface.py
+
+# choose a different repo / private
+.venv\Scripts\python.exe scripts/upload_to_huggingface.py --repo-id <user>/<name> --private
+```
+
+The whole `processed/` folder (including the auto-generated READMEs) is uploaded and nested by source. Requires `huggingface_hub` (in `requirements.txt`).
 
 ## Key data rules (see `meta/data_dictionary_v0.md` for the full dictionary)
 

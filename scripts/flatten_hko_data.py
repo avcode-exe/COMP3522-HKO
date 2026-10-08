@@ -36,6 +36,7 @@ from collect_hko_ryes import parse_ryes
 from collect_hko_warning_history import parse_rainstorm_dat
 from collect_hko_warnings import parse_warning_information, parse_warning_summary
 from generate_processed_readmes import generate_all
+from upload_to_huggingface import DEFAULT_HF_REPO, push_processed_to_hf
 
 
 def _collected_at_from_filename(path):
@@ -496,6 +497,14 @@ def copy_station_metadata(logger):
 
 
 def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Rebuild processed/ tables from raw/ and (optionally) publish to Hugging Face")
+    parser.add_argument("--push-hf", action="store_true", help="after processing, upload processed/ to a Hugging Face dataset repo")
+    parser.add_argument("--hf-repo", default=DEFAULT_HF_REPO, help="Hugging Face dataset repo id (default: {})".format(DEFAULT_HF_REPO))
+    parser.add_argument("--hf-token", default=None, help="HF token (default: HF_TOKEN env var or cached login)")
+    args = parser.parse_args()
+
     ensure_directories()
     logger = setup_logger(name="flatten", log_file="flatten.log")
     logger.info("starting flatten/rebuild of processed tables from raw files")
@@ -519,6 +528,12 @@ def main():
     copy_station_metadata(logger)
     generate_all(logger=logger)
     logger.info("flatten complete")
+
+    if args.push_hf:
+        try:
+            push_processed_to_hf(repo_id=args.hf_repo, token=args.hf_token, logger=logger)
+        except Exception as exc:
+            logger.exception("Hugging Face upload failed: %s", exc)
 
 
 if __name__ == "__main__":
